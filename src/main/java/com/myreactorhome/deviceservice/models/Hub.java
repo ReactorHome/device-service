@@ -11,6 +11,7 @@ public class Hub {
 
     @Id
     private String id;
+    private Integer groupId;
 
     @DBRef
     private List<GenericDevice> devices;
@@ -39,5 +40,13 @@ public class Hub {
 
     public void setHardwareId(String hardwareId) {
         this.hardwareId = hardwareId;
+    }
+
+    public Integer getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
     }
 }
