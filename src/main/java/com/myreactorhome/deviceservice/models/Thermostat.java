@@ -1,5 +1,11 @@
 package com.myreactorhome.deviceservice.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Thermostat extends GenericDevice {
 
     private String nestDeviceId;
@@ -25,10 +31,10 @@ public class Thermostat extends GenericDevice {
     private Integer ecoTemperatureHighC;
     private Integer ecoTemperatureLowF;
     private Integer ecoTemperatureLowC;
-    private String hvacMode;
     private String previousHvacMode;
     // R/W
     private String label;
+    private String hvacMode;
     private Integer fanTimerDuration;
     // End R/W
 
