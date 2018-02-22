@@ -59,7 +59,7 @@ public class GenericDeviceController {
     }
 
     @PostMapping("api/device/outlet/{id}")
-    ResponseEntity<?> createLight(@PathVariable("id") String id, @RequestBody Outlet outlet){
+    ResponseEntity<?> createOutlet(@PathVariable("id") String id, @RequestBody Outlet outlet){
         Hub hub = hubRepository.findOne(id);
         hub.getDevices().add(outlet);
         hubRepository.save(hub);
@@ -68,7 +68,7 @@ public class GenericDeviceController {
     }
 
     @PostMapping("api/device/sensor/{id}")
-    ResponseEntity<?> createLight(@PathVariable("id") String id, @RequestBody Sensor sensor){
+    ResponseEntity<?> createSensor(@PathVariable("id") String id, @RequestBody Sensor sensor){
         Hub hub = hubRepository.findOne(id);
         hub.getDevices().add(sensor);
         hubRepository.save(hub);
@@ -76,12 +76,5 @@ public class GenericDeviceController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @PostMapping("api/device/thermostat/{id}")
-    ResponseEntity<?> createLight(@PathVariable("id") String id, @RequestBody Thermostat thermostat){
-        Hub hub = hubRepository.findOne(id);
-        hub.getDevices().add(thermostat);
-        hubRepository.save(hub);
 
-        return new ResponseEntity(HttpStatus.CREATED);
-    }
 }

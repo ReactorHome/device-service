@@ -1,14 +1,17 @@
 package com.myreactorhome.deviceservice.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Thermostat extends GenericDevice {
 
-    private String nestDeviceId;
+    private String deviceId;
     private Boolean canCool;
     private Boolean canHeat;
     private Boolean isUsingEmergencyHeat;
@@ -37,18 +40,20 @@ public class Thermostat extends GenericDevice {
     private String hvacMode;
     private Integer fanTimerDuration;
     // End R/W
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String apiKey;
 
 
     public Thermostat() {
         this.setType(DeviceType.THERMOSTAT);
     }
 
-    public String getNestDeviceId() {
-        return nestDeviceId;
+    public String getDeviceId() {
+        return deviceId;
     }
 
-    public void setNestDeviceId(String nestDeviceId) {
-        this.nestDeviceId = nestDeviceId;
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public Boolean getCanCool() {
@@ -217,5 +222,13 @@ public class Thermostat extends GenericDevice {
 
     public void setFanTimerDuration(Integer fanTimerDuration) {
         this.fanTimerDuration = fanTimerDuration;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 }

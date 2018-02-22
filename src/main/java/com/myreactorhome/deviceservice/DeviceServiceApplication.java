@@ -2,26 +2,30 @@ package com.myreactorhome.deviceservice;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myreactorhome.deviceservice.feign_clients.NestClient;
 import com.myreactorhome.deviceservice.models.GenericDevice;
 import com.myreactorhome.deviceservice.models.Hub;
 import com.myreactorhome.deviceservice.models.Outlet;
 import com.myreactorhome.deviceservice.models.Thermostat;
 import com.myreactorhome.deviceservice.repositories.HubRepository;
 import com.myreactorhome.deviceservice.repositories.OutletRepository;
-import com.myreactorhome.deviceservice.services.MessageService;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.internal.security.SSLSocketFactoryFactory;
+//import com.myreactorhome.deviceservice.services.MessageService;
+//import org.eclipse.paho.client.mqttv3.MqttClient;
+//import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+//import org.eclipse.paho.client.mqttv3.MqttException;
+//import org.eclipse.paho.client.mqttv3.internal.security.SSLSocketFactoryFactory;
+import com.myreactorhome.deviceservice.repositories.ThermostatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 
 import java.util.ArrayList;
 
+@EnableFeignClients
 @SpringBootApplication
 public class DeviceServiceApplication implements CommandLineRunner {
 
@@ -30,6 +34,12 @@ public class DeviceServiceApplication implements CommandLineRunner {
 
 	@Autowired
 	HubRepository hubRepository;
+
+	@Autowired
+	ThermostatRepository thermostatRepository;
+
+	@Autowired
+	NestClient nestClient;
 
 	public static void main(String[] args) {
 		SpringApplication.run(DeviceServiceApplication.class, args);
@@ -93,36 +103,39 @@ public class DeviceServiceApplication implements CommandLineRunner {
 
 		outletRepository.deleteAll();
 		hubRepository.deleteAll();
-
+		thermostatRepository.deleteAll();
+//		String jsonS = nestClient.getThermostats("Bearer c.9Q02hC8JBUr0MfhgKRWFYIkEOqp1vLxjBDtA9WjY1b2GueZjC6ze0jtKhAOTHcfhk9HSu1FRGXHMUmxHbiPHIk1ea1jZQXx6gsHStiDdafLJOPWJV1ET5q5MMJqhj01X0EDHH9nS1yq8xJy5");
 		Hub hub = new Hub();
 		hub.setHardwareId("23:45:67");
-		Outlet outlet = new Outlet();
-		outlet.setHardwareId("12:34:56");
-		outlet.setConnectionAddress("123456");
-		outlet.setOn(false);
-		outlet.setManufacturer("TP-Link");
-		outletRepository.save(outlet);
-		hub.setDevices(new ArrayList<>());
-		hub.getDevices().add(outlet);
+		hub.setGroupId(1);
+//		Outlet outlet = new Outlet();
+//		outlet.setHardwareId("12:34:56");
+//		outlet.setConnectionAddress("123456");
+//		outlet.setOn(false);
+//		outlet.setManufacturer("TP-Link");
+//		outletRepository.save(outlet);
+//		hub.setDevices(new ArrayList<>());
+//		hub.getDevices().add(outlet);
 		hubRepository.save(hub);
-
-
-		Outlet outlet1 = outletRepository.findByHardwareIdIs("12:34:56");
-		System.out.println(outlet1.getType());
-
-		final ObjectMapper mapper = new ObjectMapper();
-		final JsonNode json = mapper.readTree(jsonString);
-
-// Alt 2, convert to a Pojo
-		for (final JsonNode thermostat : json) {
-			final Thermostat a = mapper.treeToValue(thermostat, Thermostat.class);
-			System.out.println(a.getEcoTemperatureHighF());
-		}
+		System.out.println(hub.getId());
+//
+//
+//		Outlet outlet1 = outletRepository.findByHardwareIdIs("12:34:56");
+//		System.out.println(outlet1.getType());
+////
+//		final ObjectMapper mapper = new ObjectMapper();
+//		final JsonNode json = mapper.readTree(jsonS);
+//
+//// Alt 2, convert to a Pojo
+//		for (final JsonNode thermostat : json) {
+//			final Thermostat a = mapper.treeToValue(thermostat, Thermostat.class);
+//			System.out.println(a.getEcoTemperatureHighF());
+//		}
 	}
 
-	@Bean
-	public MessageService messageService(){
-		return new MessageService();
-	}
+//	@Bean
+//	public MessageService messageService(){
+//		return new MessageService();
+//	}
 
 }
