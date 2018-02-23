@@ -1,29 +1,22 @@
 package com.myreactorhome.deviceservice;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myreactorhome.deviceservice.feign_clients.NestClient;
-import com.myreactorhome.deviceservice.models.GenericDevice;
 import com.myreactorhome.deviceservice.models.Hub;
-import com.myreactorhome.deviceservice.models.Outlet;
-import com.myreactorhome.deviceservice.models.Thermostat;
 import com.myreactorhome.deviceservice.repositories.HubRepository;
 import com.myreactorhome.deviceservice.repositories.OutletRepository;
-//import com.myreactorhome.deviceservice.services.MessageService;
-//import org.eclipse.paho.client.mqttv3.MqttClient;
-//import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-//import org.eclipse.paho.client.mqttv3.MqttException;
-//import org.eclipse.paho.client.mqttv3.internal.security.SSLSocketFactoryFactory;
 import com.myreactorhome.deviceservice.repositories.ThermostatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 
-import java.util.ArrayList;
+//import com.myreactorhome.deviceservice.services.MessageService;
+//import org.eclipse.paho.client.mqttv3.MqttClient;
+//import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+//import org.eclipse.paho.client.mqttv3.MqttException;
+//import org.eclipse.paho.client.mqttv3.internal.security.SSLSocketFactoryFactory;
 
 @EnableFeignClients
 @SpringBootApplication
@@ -118,19 +111,6 @@ public class DeviceServiceApplication implements CommandLineRunner {
 //		hub.getDevices().add(outlet);
 		hubRepository.save(hub);
 		System.out.println(hub.getId());
-//
-//
-//		Outlet outlet1 = outletRepository.findByHardwareIdIs("12:34:56");
-//		System.out.println(outlet1.getType());
-////
-//		final ObjectMapper mapper = new ObjectMapper();
-//		final JsonNode json = mapper.readTree(jsonS);
-//
-//// Alt 2, convert to a Pojo
-//		for (final JsonNode thermostat : json) {
-//			final Thermostat a = mapper.treeToValue(thermostat, Thermostat.class);
-//			System.out.println(a.getEcoTemperatureHighF());
-//		}
 	}
 
 //	@Bean
