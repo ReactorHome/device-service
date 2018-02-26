@@ -21,10 +21,9 @@ public class HubController {
     @Autowired
     private HubRepository hubRepository;
 
-    @GetMapping("api/hub/{id}")
+    @GetMapping("api/{id}/hub")
     @PreAuthorize("isGroupMember(#id)")
     public Hub index(@PathVariable("id") String id) {
-
         Hub hub = hubRepository.findOne(id);
         return hub;
     }
@@ -32,7 +31,6 @@ public class HubController {
     @PostMapping("api/hub")
     public ResponseEntity<?> createHub(@RequestBody Hub hub) {
         hubRepository.save(hub);
-
         return new ResponseEntity(HttpStatus.CREATED);
     }
 }

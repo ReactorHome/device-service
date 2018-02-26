@@ -29,7 +29,7 @@ public class GenericDeviceController {
     private ThermostatRepository thermostatRepository;
 
 
-    @GetMapping ("api/device/{id}")
+    @GetMapping ("api/{id}/device")
     public GenericDevice index(@PathVariable("id") String id) {
 
         if(lightRepository.exists(id)) {
@@ -49,7 +49,7 @@ public class GenericDeviceController {
         }
     }
 
-    @PostMapping("api/device/light/{id}")
+    @PostMapping("api/{id}/device/light")
     public ResponseEntity<?> createLight(@PathVariable("id") String id, @RequestBody Light light){
         Hub hub = hubRepository.findOne(id);
         hub.getDevices().add(light);
@@ -58,7 +58,7 @@ public class GenericDeviceController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @PostMapping("api/device/outlet/{id}")
+    @PostMapping("api/{id}/device/outlet")
     ResponseEntity<?> createOutlet(@PathVariable("id") String id, @RequestBody Outlet outlet){
         Hub hub = hubRepository.findOne(id);
         hub.getDevices().add(outlet);
@@ -67,7 +67,7 @@ public class GenericDeviceController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @PostMapping("api/device/sensor/{id}")
+    @PostMapping("api/{id}/device/sensor")
     ResponseEntity<?> createSensor(@PathVariable("id") String id, @RequestBody Sensor sensor){
         Hub hub = hubRepository.findOne(id);
         hub.getDevices().add(sensor);
