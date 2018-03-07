@@ -18,6 +18,8 @@ public class Hub {
 
     private String hardwareId;
 
+    private boolean connected;
+
     public String getId() {
         return id;
     }
@@ -48,5 +50,13 @@ public class Hub {
 
     public void setGroupId(Integer groupId) {
         this.groupId = groupId;
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
     }
 }

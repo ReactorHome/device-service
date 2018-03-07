@@ -8,4 +8,5 @@ import java.util.List;
 public interface HubRepository extends MongoRepository<Hub, String> {
     Hub findByGroupId(Integer groupId);
     List<Hub> findByGroupIdIn(List<Integer> groupIds);
+    Hub findByHardwareId(String hardware_id);
 }

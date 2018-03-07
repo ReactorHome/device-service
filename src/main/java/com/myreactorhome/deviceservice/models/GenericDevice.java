@@ -1,5 +1,7 @@
 package com.myreactorhome.deviceservice.models;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
@@ -16,6 +18,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 }
  */
 
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public abstract class GenericDevice {
 
     @Id

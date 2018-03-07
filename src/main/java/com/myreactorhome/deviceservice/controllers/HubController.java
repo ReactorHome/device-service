@@ -31,6 +31,7 @@ public class HubController {
 
     @PostMapping("api/hub")
     public ResponseEntity<?> createHub(@RequestBody Hub hub) {
+        hub.setConnected(true);
         hubRepository.save(hub);
 
         return new ResponseEntity(HttpStatus.CREATED);

@@ -14,9 +14,12 @@ package com.myreactorhome.deviceservice.models;
 }
  */
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "outlets")
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Outlet extends GenericDevice{
     private Boolean on;
 

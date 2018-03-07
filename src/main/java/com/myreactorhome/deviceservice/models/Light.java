@@ -21,11 +21,14 @@ package com.myreactorhome.deviceservice.models;
 }
  */
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
 @Document(collection = "lights")
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Light extends GenericDevice {
 
     private Boolean on;
