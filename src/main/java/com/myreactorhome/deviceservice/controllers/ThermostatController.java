@@ -26,7 +26,7 @@ public class ThermostatController {
     private ThermostatRepository thermostatRepository;
 
     @Autowired
-    NestClient nestClient;
+    private NestClient nestClient;
 
     @PostMapping("api/{id}/thermostat")
     ResponseEntity<?> createThermostat(@PathVariable("id") String id, @RequestBody Thermostat thermostat){
