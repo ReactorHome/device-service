@@ -21,16 +21,16 @@ import java.util.Optional;
 public class CloudMessageHandler implements IMqttMessageListener {
 
 
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
 
-    OutletRepository outletRepository;
+    private OutletRepository outletRepository;
 
 
-    LightRepository lightRepository;
+    private LightRepository lightRepository;
 
 
-    HubRepository hubRepository;
+    private HubRepository hubRepository;
 
 
     public CloudMessageHandler(OutletRepository outletRepository, LightRepository lightRepository, HubRepository hubRepository){
@@ -73,7 +73,7 @@ public class CloudMessageHandler implements IMqttMessageListener {
         for (int i = 0; i < connectionSize; i++){
             JsonNode currentDevice = message.get("state_change_list").get(i);
             try {
-                this.createOrUpdateDevice(currentDevice, true);
+                this.createOrUpdateDevice(currentDevice);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
@@ -86,13 +86,12 @@ public class CloudMessageHandler implements IMqttMessageListener {
         hubRepository.save(hub);
     }
 
-    private void createOrUpdateDevice(JsonNode message, boolean connected) throws JsonProcessingException {
+    private void createOrUpdateDevice(JsonNode message) throws JsonProcessingException {
         switch (message.get("type").asInt()){
             case 0:
                 Light light = objectMapper.treeToValue(message, Light.class);
                 Optional<Light> lightOptional = lightRepository.findByHardwareIdIs(message.get("hardware_id").asText());
                 lightOptional.ifPresent(light1 -> light.setId(light1.getId()));
-                //light.setConnected(connected);
                 lightRepository.save(light);
                 break;
 
@@ -100,8 +99,6 @@ public class CloudMessageHandler implements IMqttMessageListener {
                 Outlet outlet = objectMapper.treeToValue(message, Outlet.class);
                 Optional<Outlet> outletOptional = outletRepository.findByHardwareIdIs(outlet.getHardwareId());
                 outletOptional.ifPresent(outlet1 -> outlet.setId(outlet1.getId()));
-                System.out.println("Outlet ID after present check: " + outlet.getId());
-                //outlet.setConnected(connected);
 
                 outletRepository.save(outlet);
                 break;

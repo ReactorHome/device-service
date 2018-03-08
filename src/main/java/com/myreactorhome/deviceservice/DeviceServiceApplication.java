@@ -103,6 +103,7 @@ public class DeviceServiceApplication implements CommandLineRunner {
 		Hub hub = new Hub();
 		hub.setHardwareId("23:45:67");
 		hub.setGroupId(1);
+		hub.setConnected(true);
 //		Outlet outlet = new Outlet();
 //		outlet.setHardwareId("12:34:56");
 //		outlet.setConnectionAddress("123456");

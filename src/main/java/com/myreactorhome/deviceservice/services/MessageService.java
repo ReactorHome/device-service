@@ -7,6 +7,7 @@ import com.myreactorhome.deviceservice.repositories.OutletRepository;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.internal.security.SSLSocketFactoryFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,18 @@ public class MessageService implements DisposableBean{
         this.outletRepository = outletRepository;
         this.lightRepository = lightRepository;
         this.hubRepository = hubRepository;
+    }
+
+    public void sendMessage(String topic, String message){
+        MqttMessage message1 = new MqttMessage();
+        message1.setPayload(message.getBytes());
+        message1.setQos(0);
+        message1.setRetained(false);
+        try {
+            this.mqttClient.publish(topic, message1);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
