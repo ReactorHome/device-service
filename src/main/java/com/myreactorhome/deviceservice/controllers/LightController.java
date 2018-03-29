@@ -3,6 +3,7 @@ package com.myreactorhome.deviceservice.controllers;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myreactorhome.deviceservice.feign_clients.EventClient;
 import com.myreactorhome.deviceservice.models.Hub;
 import com.myreactorhome.deviceservice.models.Light;
 import com.myreactorhome.deviceservice.models.Outlet;
@@ -31,7 +32,10 @@ public class LightController {
     @Autowired
     LightRepository lightRepository;
 
-    @PatchMapping("/api/{id}/light/{lightId}")
+    @Autowired
+    private EventClient eventClient;
+
+    @PatchMapping("/api/{id}/light/")
     public ResponseEntity<?> update(@PathVariable("id") String hubId, @RequestBody Light light){
         Hub hub = hubRepository.findOne(hubId);
         if (!hub.isConnected()){
@@ -54,6 +58,8 @@ public class LightController {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+
+        eventClient.createEvent(hub.getGroupId(), light.getId());
 
         return new ResponseEntity(HttpStatus.OK);
     }

@@ -2,6 +2,7 @@ package com.myreactorhome.deviceservice.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myreactorhome.deviceservice.feign_clients.EventClient;
 import com.myreactorhome.deviceservice.feign_clients.NestClient;
 import com.myreactorhome.deviceservice.models.Hub;
 import com.myreactorhome.deviceservice.models.Thermostat;
@@ -27,6 +28,9 @@ public class ThermostatController {
 
     @Autowired
     private NestClient nestClient;
+
+    @Autowired
+    private EventClient eventClient;
 
     @PostMapping("api/{id}/thermostat")
     ResponseEntity<?> createThermostat(@PathVariable("id") String id, @RequestBody Thermostat thermostat){
@@ -76,6 +80,8 @@ public class ThermostatController {
         String nestDeviceId = thermostat.getDeviceId();
         thermostat.setDeviceId(null);
         nestClient.updateThermostat(nestToken, nestDeviceId, thermostat);
+
+        eventClient.createEvent(hubRepository.findOne(hubId).getGroupId(), thermostat.getId());
 
         return new ResponseEntity(HttpStatus.OK);
     }

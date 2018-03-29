@@ -1,5 +1,6 @@
 package com.myreactorhome.deviceservice.services;
 
+import com.myreactorhome.deviceservice.feign_clients.EventClient;
 import com.myreactorhome.deviceservice.messaging.CloudMessageHandler;
 import com.myreactorhome.deviceservice.repositories.HubRepository;
 import com.myreactorhome.deviceservice.repositories.LightRepository;
@@ -28,9 +29,10 @@ public class MessageService implements DisposableBean{
     final
     HubRepository hubRepository;
 
+    final EventClient eventClient;
 
     @Autowired
-    public MessageService(OutletRepository outletRepository, LightRepository lightRepository, HubRepository hubRepository){
+    public MessageService(OutletRepository outletRepository, LightRepository lightRepository, HubRepository hubRepository, EventClient eventClient){
         try {
             this.mqttClient = new MqttClient("ssl://message-broker.myreactorhome.com:1883", "device-service");
             MqttConnectOptions connOpts = new MqttConnectOptions();
@@ -39,13 +41,14 @@ public class MessageService implements DisposableBean{
             connOpts.setCleanSession(true);
             connOpts.setSocketFactory(factoryFactory.createSocketFactory(null));
             this.mqttClient.connect(connOpts);
-            this.mqttClient.subscribe("cloud_messaging", new CloudMessageHandler(outletRepository, lightRepository, hubRepository));
+            this.mqttClient.subscribe("cloud_messaging", new CloudMessageHandler(outletRepository, lightRepository, hubRepository, eventClient));
         } catch (MqttException e) {
             e.printStackTrace();
         }
         this.outletRepository = outletRepository;
         this.lightRepository = lightRepository;
         this.hubRepository = hubRepository;
+        this.eventClient = eventClient;
     }
 
     public void sendMessage(String topic, String message){

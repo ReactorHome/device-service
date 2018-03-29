@@ -2,7 +2,6 @@ package com.myreactorhome.deviceservice.controllers;
 
 import com.myreactorhome.deviceservice.models.*;
 import com.myreactorhome.deviceservice.repositories.*;
-import javafx.scene.control.Alert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
