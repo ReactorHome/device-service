@@ -78,10 +78,6 @@ public class CloudMessageHandler implements IMqttMessageListener {
             if(hub != null){
                 hubRepository.save(hub);
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -115,11 +111,10 @@ public class CloudMessageHandler implements IMqttMessageListener {
                 Optional<Light> lightOptional = lightRepository.findByHardwareIdIs(message.get("hardware_id").asText());
                 lightOptional.ifPresent(light1 -> light.setId(light1.getId()));
 
-                groupId = hubRepository.findByHardwareId(light.getHardwareId()).getGroupId();
-                eventClient.createEvent(groupId, light.getId());
-
                 lightRepository.save(light);
                 if(hub != null){
+                    groupId = hub.getGroupId();
+                    eventClient.createEvent(groupId, light.getId());
                     hub.getDevices().add(light);
                 }
                 break;
@@ -129,11 +124,10 @@ public class CloudMessageHandler implements IMqttMessageListener {
                 Optional<Outlet> outletOptional = outletRepository.findByHardwareIdIs(outlet.getHardwareId());
                 outletOptional.ifPresent(outlet1 -> outlet.setId(outlet1.getId()));
 
-                groupId = hubRepository.findByHardwareId(outlet.getHardwareId()).getGroupId();
-                eventClient.createEvent(groupId, outlet.getId());
-
                 outletRepository.save(outlet);
                 if(hub != null){
+                    groupId = hub.getGroupId();
+                    eventClient.createEvent(groupId, outlet.getId());
                     hub.getDevices().add(outlet);
                 }
                 break;
