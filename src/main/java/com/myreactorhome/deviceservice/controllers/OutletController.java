@@ -3,6 +3,7 @@ package com.myreactorhome.deviceservice.controllers;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myreactorhome.deviceservice.feign_clients.EventClient;
 import com.myreactorhome.deviceservice.models.Hub;
 import com.myreactorhome.deviceservice.models.HubMessage;
 import com.myreactorhome.deviceservice.models.HubMessageType;
@@ -32,7 +33,10 @@ public class OutletController {
     @Autowired
     HubRepository hubRepository;
 
-    @PatchMapping("/api/{id}/outlet/{outletId}")
+    @Autowired
+    private EventClient eventClient;
+
+    @PatchMapping("/api/{id}/outlet/")
     public ResponseEntity<?> update(@PathVariable("id") String hubId, @RequestBody Outlet outlet){
         Hub hub = hubRepository.findOne(hubId);
         if (!hub.isConnected()){
@@ -55,6 +59,8 @@ public class OutletController {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+
+        eventClient.createEvent(hub.getGroupId(), outlet.getId());
 
         repositoryOutlet.get().update(outlet);
         outletRepository.save(repositoryOutlet.get());

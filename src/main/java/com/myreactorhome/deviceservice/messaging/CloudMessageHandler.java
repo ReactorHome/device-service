@@ -3,6 +3,7 @@ package com.myreactorhome.deviceservice.messaging;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myreactorhome.deviceservice.feign_clients.EventClient;
 import com.myreactorhome.deviceservice.models.Hub;
 import com.myreactorhome.deviceservice.models.Light;
 import com.myreactorhome.deviceservice.models.Outlet;
@@ -34,11 +35,15 @@ public class CloudMessageHandler implements IMqttMessageListener {
     private HubRepository hubRepository;
 
 
-    public CloudMessageHandler(OutletRepository outletRepository, LightRepository lightRepository, HubRepository hubRepository){
+    private EventClient eventClient;
+
+
+    public CloudMessageHandler(OutletRepository outletRepository, LightRepository lightRepository, HubRepository hubRepository, EventClient eventClient){
         this.objectMapper = new ObjectMapper();
         this.outletRepository = outletRepository;
         this.lightRepository = lightRepository;
         this.hubRepository = hubRepository;
+        this.eventClient = eventClient;
     }
 
 
@@ -102,11 +107,17 @@ public class CloudMessageHandler implements IMqttMessageListener {
     }
 
     private void createOrUpdateDevice(JsonNode message, Hub hub) throws JsonProcessingException {
+        Integer groupId;
+
         switch (message.get("type").asInt()){
             case 0:
                 Light light = objectMapper.treeToValue(message, Light.class);
                 Optional<Light> lightOptional = lightRepository.findByHardwareIdIs(message.get("hardware_id").asText());
                 lightOptional.ifPresent(light1 -> light.setId(light1.getId()));
+
+                groupId = hubRepository.findByHardwareId(light.getHardwareId()).getGroupId();
+                eventClient.createEvent(groupId, light.getId());
+
                 lightRepository.save(light);
                 if(hub != null){
                     hub.getDevices().add(light);
@@ -117,6 +128,10 @@ public class CloudMessageHandler implements IMqttMessageListener {
                 Outlet outlet = objectMapper.treeToValue(message, Outlet.class);
                 Optional<Outlet> outletOptional = outletRepository.findByHardwareIdIs(outlet.getHardwareId());
                 outletOptional.ifPresent(outlet1 -> outlet.setId(outlet1.getId()));
+
+                groupId = hubRepository.findByHardwareId(outlet.getHardwareId()).getGroupId();
+                eventClient.createEvent(groupId, outlet.getId());
+
                 outletRepository.save(outlet);
                 if(hub != null){
                     hub.getDevices().add(outlet);
