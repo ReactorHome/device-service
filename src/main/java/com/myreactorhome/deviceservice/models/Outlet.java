@@ -20,7 +20,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "outlets")
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class Outlet extends GenericDevice{
+public class Outlet extends GenericDevice implements Updateable<Outlet>{
     private Boolean on;
 
     public Outlet(){
@@ -33,5 +33,12 @@ public class Outlet extends GenericDevice{
 
     public void setOn(Boolean on) {
         this.on = on;
+    }
+
+    @Override
+    public void update(Outlet other) {
+        if(other.getOn() != null){
+            this.setOn(other.getOn());
+        }
     }
 }

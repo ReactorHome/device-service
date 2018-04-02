@@ -11,9 +11,12 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.internal.security.SSLSocketFactoryFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+@Configuration
 @Component//implements DisposableBean
 public class MessageService implements DisposableBean{
 
@@ -30,14 +33,18 @@ public class MessageService implements DisposableBean{
 
 
     @Autowired
-    public MessageService(OutletRepository outletRepository, LightRepository lightRepository, HubRepository hubRepository){
+    public MessageService(OutletRepository outletRepository, LightRepository lightRepository, HubRepository hubRepository, @Value("${reactor.broker.uri}") String serverURI){
+        System.out.println("Server URI " + serverURI);
         try {
-            this.mqttClient = new MqttClient("ssl://message-broker.myreactorhome.com:1883", "device-service");
+            this.mqttClient = new MqttClient(serverURI, "device-service2");
             MqttConnectOptions connOpts = new MqttConnectOptions();
-            SSLSocketFactoryFactory factoryFactory = new SSLSocketFactoryFactory();
-            connOpts.setKeepAliveInterval(45);
+            connOpts.setKeepAliveInterval(30);
             connOpts.setCleanSession(true);
-            connOpts.setSocketFactory(factoryFactory.createSocketFactory(null));
+            connOpts.setAutomaticReconnect(true);
+            if(serverURI.contains("ssl")){
+                SSLSocketFactoryFactory factoryFactory = new SSLSocketFactoryFactory();
+                connOpts.setSocketFactory(factoryFactory.createSocketFactory(null));
+            }
             this.mqttClient.connect(connOpts);
             this.mqttClient.subscribe("cloud_messaging", new CloudMessageHandler(outletRepository, lightRepository, hubRepository));
         } catch (MqttException e) {

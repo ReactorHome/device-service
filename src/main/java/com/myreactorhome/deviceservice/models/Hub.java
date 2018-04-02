@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Set;
 
 @Document(collection = "hubs")
 public class Hub {
@@ -14,7 +15,7 @@ public class Hub {
     private Integer groupId;
 
     @DBRef
-    private List<GenericDevice> devices;
+    private Set<GenericDevice> devices;
 
     private String hardwareId;
 
@@ -28,11 +29,11 @@ public class Hub {
         this.id = id;
     }
 
-    public List<GenericDevice> getDevices() {
+    public Set<GenericDevice> getDevices() {
         return devices;
     }
 
-    public void setDevices(List<GenericDevice> devices) {
+    public void setDevices(Set<GenericDevice> devices) {
         this.devices = devices;
     }
 

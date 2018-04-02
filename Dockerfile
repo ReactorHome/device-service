@@ -1,4 +1,8 @@
-FROM java:8
-COPY /target/device-service-0.0.1-SNAPSHOT.jar /device-service-0.0.1-SNAPSHOT.jar
-EXPOSE 8080
-ENTRYPOINT java -jar /device-service-0.0.1-SNAPSHOT.jar
+FROM openjdk:8-jre
+MAINTAINER Reactor <reactor@myreactorhome.com>
+
+ENTRYPOINT ["/usr/bin/java", "-jar", "/usr/share/device-service/device-service.jar"]
+
+# Add the service itself
+ARG JAR_FILE
+ADD ./target/${JAR_FILE} /usr/share/device-service/device-service.jar

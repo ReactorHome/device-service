@@ -52,7 +52,6 @@
 			<version>RELEASE</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.springframework.security.oauth</groupId>
 			<artifactId>spring-security-oauth2</artifactId>
@@ -86,7 +85,7 @@
 				</executions>
 				<configuration>
 					<repository>137312410501.dkr.ecr.us-east-2.amazonaws.com/device-service</repository>
-					<tag>${project.version}</tag>
+					<tag>latest</tag>
 					<contextDirectory>${project.basedir}</contextDirectory>
 					<buildArgs>
 						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>

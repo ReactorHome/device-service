@@ -96,4 +96,19 @@ public abstract class GenericDevice {
     public void setModel(String model) {
         this.model = model;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(getClass() == obj.getClass()){
+            GenericDevice other = (GenericDevice) obj;
+            return other.getHardwareId().equals(this.getHardwareId());
+        }
+        return false;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return hardwareId.hashCode();
+    }
 }

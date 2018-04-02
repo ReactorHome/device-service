@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @RestController
@@ -60,7 +61,7 @@ public class ThermostatController {
 
         Hub hub = hubRepository.findOne(id);
         if(hub.getDevices() == null){
-            hub.setDevices(new ArrayList<>());
+            hub.setDevices(new HashSet<>());
         }
         thermostatRepository.save(thermostats);
         hub.getDevices().addAll(thermostats);

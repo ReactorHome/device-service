@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myreactorhome.deviceservice.models.Hub;
+import com.myreactorhome.deviceservice.models.HubMessage;
+import com.myreactorhome.deviceservice.models.HubMessageType;
 import com.myreactorhome.deviceservice.models.Outlet;
 import com.myreactorhome.deviceservice.repositories.HubRepository;
 import com.myreactorhome.deviceservice.repositories.OutletRepository;
@@ -45,14 +47,17 @@ public class OutletController {
         if (!repositoryOutlet.get().getConnected()){
             return new ResponseEntity(HttpStatus.FORBIDDEN);
         }
-
+        HubMessage message = new HubMessage(HubMessageType.OUTLET, outlet);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         try {
-            messageService.sendMessage(hub.getHardwareId(), objectMapper.writeValueAsString(outlet));
+            messageService.sendMessage(hub.getHardwareId(), objectMapper.writeValueAsString(message));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+
+        repositoryOutlet.get().update(outlet);
+        outletRepository.save(repositoryOutlet.get());
 
         return new ResponseEntity(HttpStatus.OK);
     }
