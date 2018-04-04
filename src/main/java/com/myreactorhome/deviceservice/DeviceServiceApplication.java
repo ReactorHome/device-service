@@ -1,5 +1,6 @@
 package com.myreactorhome.deviceservice;
 
+import com.myreactorhome.deviceservice.feign_clients.EventClient;
 import com.myreactorhome.deviceservice.feign_clients.NestClient;
 import com.myreactorhome.deviceservice.models.Hub;
 import com.myreactorhome.deviceservice.repositories.HubRepository;
@@ -13,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 
 //import com.myreactorhome.deviceservice.services.MessageService;
 //import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -22,6 +24,7 @@ import org.springframework.context.annotation.Profile;
 
 @EnableFeignClients
 @SpringBootApplication
+@EnableOAuth2Client
 public class DeviceServiceApplication implements CommandLineRunner {
 
 	@Autowired
@@ -35,6 +38,9 @@ public class DeviceServiceApplication implements CommandLineRunner {
 
 	@Autowired
 	NestClient nestClient;
+
+	@Autowired
+	EventClient eventClient;
 
 	public static void main(String[] args) {
 		SpringApplication.run(DeviceServiceApplication.class, args);

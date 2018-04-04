@@ -114,7 +114,7 @@ public class CloudMessageHandler implements IMqttMessageListener {
                 lightRepository.save(light);
                 if(hub != null){
                     groupId = hub.getGroupId();
-                    eventClient.createEvent(groupId, light.getId());
+                    //eventClient.createEvent(groupId, light.getId());
                     hub.getDevices().add(light);
                 }
                 break;
@@ -127,7 +127,7 @@ public class CloudMessageHandler implements IMqttMessageListener {
                 outletRepository.save(outlet);
                 if(hub != null){
                     groupId = hub.getGroupId();
-                    eventClient.createEvent(groupId, outlet.getId());
+                    //eventClient.createEvent(groupId, outlet.getId());
                     hub.getDevices().add(outlet);
                 }
                 break;
