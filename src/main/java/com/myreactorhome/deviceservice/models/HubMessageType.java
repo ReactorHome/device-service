@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum HubMessageType {
     OUTLET,
-    LIGHT;
+    LIGHT,
+    REGISTER_BRIDGE;
 
 
     @JsonValue

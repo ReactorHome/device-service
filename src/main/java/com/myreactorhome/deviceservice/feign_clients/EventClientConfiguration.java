@@ -27,7 +27,8 @@ public class EventClientConfiguration {
     private String secret;
 
     @Bean
-    public RequestInterceptor oauth2FeignRequestInterceptor(@Qualifier("oauth2ClientContext") OAuth2ClientContext oauth2ClientContext){
+    public RequestInterceptor oauth2FeignRequestInterceptor(){
+        OAuth2ClientContext oauth2ClientContext = new DefaultOAuth2ClientContext();
         return new OAuth2FeignRequestInterceptor(oauth2ClientContext, resource());
     }
 

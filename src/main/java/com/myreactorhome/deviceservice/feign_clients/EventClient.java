@@ -12,4 +12,7 @@ public interface EventClient {
 
     @PostMapping("service/events/{id}/{device}")
     ResponseEntity createEvent(@PathVariable("id") Integer groupId, @PathVariable("device") String device);
+
+    @PostMapping("service/events/{id}/{device}")
+    ResponseEntity createEvent(@PathVariable("id") Integer groupId, @PathVariable("device") String device, @RequestBody String json);
 }

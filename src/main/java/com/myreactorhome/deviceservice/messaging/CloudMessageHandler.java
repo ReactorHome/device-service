@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myreactorhome.deviceservice.feign_clients.EventClient;
+import com.myreactorhome.deviceservice.models.GenericDevice;
 import com.myreactorhome.deviceservice.models.Hub;
 import com.myreactorhome.deviceservice.models.Light;
 import com.myreactorhome.deviceservice.models.Outlet;
@@ -20,7 +21,7 @@ import java.util.Optional;
 
 
 
-public class CloudMessageHandler implements IMqttMessageListener {
+public class CloudMessageHandler implements IMqttMessageListener{
 
 
     private ObjectMapper objectMapper;
@@ -74,6 +75,10 @@ public class CloudMessageHandler implements IMqttMessageListener {
                 case "disconnection":
                     this.handleHubStateChange(hardwareId, false);
                     break;
+
+                case "bridge_message":
+                    this.handleBridgeMessage(hub, root);
+                    break;
             }
             if(hub != null){
                 hubRepository.save(hub);
@@ -113,9 +118,15 @@ public class CloudMessageHandler implements IMqttMessageListener {
 
                 lightRepository.save(light);
                 if(hub != null){
-                    groupId = hub.getGroupId();
-                    //eventClient.createEvent(groupId, light.getId());
-                    hub.getDevices().add(light);
+                    updateHubAndGenerateEvent(hub, light);
+//                    groupId = hub.getGroupId();
+//                    try{
+//                        eventClient.createEvent(groupId, light.getId());
+//                    }catch (Exception e){
+//                        e.printStackTrace();
+//                    }
+//
+//                    hub.getDevices().add(light);
                 }
                 break;
 
@@ -126,11 +137,46 @@ public class CloudMessageHandler implements IMqttMessageListener {
 
                 outletRepository.save(outlet);
                 if(hub != null){
-                    groupId = hub.getGroupId();
-                    //eventClient.createEvent(groupId, outlet.getId());
-                    hub.getDevices().add(outlet);
+                    updateHubAndGenerateEvent(hub, outlet);
+//                    groupId = hub.getGroupId();
+//                    try{
+//                        eventClient.createEvent(groupId, outlet.getId());
+//                    }catch (Exception e){
+//                        e.printStackTrace();
+//                    }
+//                    hub.getDevices().add(outlet);
                 }
                 break;
+        }
+    }
+
+    private void handleBridgeMessage(Hub hub, JsonNode message){
+        if(hub != null){
+            int bridgeSize = message.get("data").size();
+
+            for(int i = 0; i < bridgeSize; i++){
+                JsonNode currentBridge = message.get("data").get(i);
+                String bridgeText = null;
+                try {
+                    bridgeText = objectMapper.writeValueAsString(currentBridge);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                eventClient.createEvent(hub.getGroupId(), currentBridge.get("name").asText(), bridgeText);
+            }
+
+        }
+    }
+
+    private void updateHubAndGenerateEvent(Hub hub, GenericDevice device){
+        if(hub != null){
+            Integer groupId = hub.getGroupId();
+            try{
+                eventClient.createEvent(groupId, device.getId());
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            hub.getDevices().add(device);
         }
     }
 }

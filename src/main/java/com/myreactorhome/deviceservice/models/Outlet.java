@@ -40,5 +40,9 @@ public class Outlet extends GenericDevice implements Updateable<Outlet>{
         if(other.getOn() != null){
             this.setOn(other.getOn());
         }
+
+        if(other.getName() != null){
+            this.setName(other.getName());
+        }
     }
 }
