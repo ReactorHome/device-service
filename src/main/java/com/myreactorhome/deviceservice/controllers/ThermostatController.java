@@ -4,20 +4,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myreactorhome.deviceservice.feign_clients.EventClient;
 import com.myreactorhome.deviceservice.feign_clients.NestClient;
+import com.myreactorhome.deviceservice.feign_clients.NestRegistrationClient;
 import com.myreactorhome.deviceservice.models.Hub;
 import com.myreactorhome.deviceservice.models.Thermostat;
 import com.myreactorhome.deviceservice.repositories.HubRepository;
 import com.myreactorhome.deviceservice.repositories.ThermostatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 @RestController
 public class ThermostatController {
@@ -33,7 +33,16 @@ public class ThermostatController {
     @Autowired
     private EventClient eventClient;
 
-    @PostMapping("api/{id}/thermostat")
+    @Autowired
+    private NestRegistrationClient nestRegistrationClient;
+
+    @Value("${reactor.nest.id}")
+    private String nestClientId;
+
+    @Value("${reactor.nest.secret}")
+    private String nestClientSecret;
+
+    @PostMapping("/api/{id}/thermostat")
     ResponseEntity<?> createThermostat(@PathVariable("id") String id, @RequestBody Thermostat thermostat){
         Hub hub = hubRepository.findOne(id);
         hub.getDevices().add(thermostat);
@@ -42,14 +51,24 @@ public class ThermostatController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @PostMapping("api/{id}/thermostat/register/nest")
+    @PostMapping("/api/{id}/thermostat/register/nest")
     @PreAuthorize("isGroupMember(#id)")
     List<Thermostat> registerWithNest(@PathVariable("id") String id,@RequestBody String nestAuthToken){
+
+        Map<String, String> formParams = new HashMap<>();
+        formParams.put("client_id", nestClientId);
+        formParams.put("client_secret", nestClientSecret);
+        formParams.put("code", nestAuthToken);
+        formParams.put("grant_type", "authorization_code");
+
+        Map<String, Object> authResponse = nestRegistrationClient.register(formParams);
+        //Map<String, Object> authResponse = nestRegistrationClient.register(nestClientId, nestClientSecret, nestAuthToken, "authorization_code");
+
         List<Thermostat> thermostats = new ArrayList<>();
         System.out.println(nestAuthToken);
 
 
-        String jsonS = nestClient.getThermostats("Bearer " + nestAuthToken);
+        String jsonS = nestClient.getThermostats("Bearer " + (String)authResponse.get("access_token"));
         final ObjectMapper mapper = new ObjectMapper();
         final JsonNode json;
         try {
@@ -74,7 +93,7 @@ public class ThermostatController {
         return thermostats;
     }
 
-    @PutMapping("api/{hubId}/thermostat/{thermostatId}")
+    @PutMapping("/api/{hubId}/thermostat/{thermostatId}")
     @PreAuthorize("isGroupMember(#hubId)")
     ResponseEntity<?> updateThermostat(@PathVariable("hubId") String hubId, @PathVariable("thermostatId") String thermostatId, @RequestBody Thermostat thermostat){
         String nestToken = thermostatRepository.findOne(thermostatId).getApiKey();
@@ -82,7 +101,7 @@ public class ThermostatController {
         thermostat.setDeviceId(null);
         nestClient.updateThermostat(nestToken, nestDeviceId, thermostat);
 
-        eventClient.createEvent(hubRepository.findOne(hubId).getGroupId(), thermostat.getId());
+        eventClient.createEvent(hubRepository.findOne(hubId).getGroupId(), thermostat.getName());
 
         return new ResponseEntity(HttpStatus.OK);
     }

@@ -172,7 +172,7 @@ public class CloudMessageHandler implements IMqttMessageListener{
         if(hub != null){
             Integer groupId = hub.getGroupId();
             try{
-                eventClient.createEvent(groupId, device.getId());
+                eventClient.createEvent(groupId, device.getName());
             }catch (Exception e){
                 e.printStackTrace();
             }

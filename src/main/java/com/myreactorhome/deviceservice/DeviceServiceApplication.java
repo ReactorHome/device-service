@@ -104,10 +104,10 @@ public class DeviceServiceApplication implements CommandLineRunner {
 
 		outletRepository.deleteAll();
 		//hubRepository.deleteAll();
-		thermostatRepository.deleteAll();
+		//thermostatRepository.deleteAll();
 //		String jsonS = nestClient.getThermostats("Bearer c.9Q02hC8JBUr0MfhgKRWFYIkEOqp1vLxjBDtA9WjY1b2GueZjC6ze0jtKhAOTHcfhk9HSu1FRGXHMUmxHbiPHIk1ea1jZQXx6gsHStiDdafLJOPWJV1ET5q5MMJqhj01X0EDHH9nS1yq8xJy5");
 		//Hub hub = new Hub();
-		//hub.setHardwareId("23:45:67");
+		//hub.setHardwareId("b8:27:eb:a7:c2:3e");
 		//hub.setGroupId(1);
 		//hub.setConnected(true);
 //		Outlet outlet = new Outlet();

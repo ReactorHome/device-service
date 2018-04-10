@@ -4,20 +4,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myreactorhome.deviceservice.feign_clients.EventClient;
-import com.myreactorhome.deviceservice.models.Hub;
-import com.myreactorhome.deviceservice.models.Light;
-import com.myreactorhome.deviceservice.models.Outlet;
+import com.myreactorhome.deviceservice.models.*;
 import com.myreactorhome.deviceservice.repositories.HubRepository;
 import com.myreactorhome.deviceservice.repositories.LightRepository;
 import com.myreactorhome.deviceservice.services.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -59,7 +56,31 @@ public class LightController {
             e.printStackTrace();
         }
 
-        eventClient.createEvent(hub.getGroupId(), light.getId());
+        eventClient.createEvent(hub.getGroupId(), light.getName());
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("/api/{id}/bridge")
+    public ResponseEntity<?> registerBridge(@PathVariable("id") String hubId, @RequestBody String serial){
+        Hub hub = hubRepository.findOne(hubId);
+        if (!hub.isConnected()){
+            return new ResponseEntity(HttpStatus.FORBIDDEN);
+        }
+
+        HueBridge bridge = new HueBridge();
+        bridge.setHardwareId(serial);
+
+        HubMessage message = new HubMessage(HubMessageType.REGISTER_BRIDGE, bridge);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        try{
+            messageService.sendMessage(hub.getHardwareId(), objectMapper.writeValueAsString(message));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
 
         return new ResponseEntity(HttpStatus.OK);
     }

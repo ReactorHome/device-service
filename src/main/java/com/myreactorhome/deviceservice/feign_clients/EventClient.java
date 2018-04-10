@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(value="event", url="${reactor.user-service}", configuration = EventClientConfiguration.class)
+@FeignClient(value="event", url="${reactor.user-service}", configuration = {EventClientConfiguration.class})
 public interface EventClient {
 
     @PostMapping("service/events/{id}/{device}")
