@@ -17,6 +17,9 @@ public class Hub {
     @DBRef
     private Set<GenericDevice> devices;
 
+    @DBRef
+    private Set<DeviceGroup> deviceGroups;
+
     private String hardwareId;
 
     private boolean connected;
@@ -59,5 +62,13 @@ public class Hub {
 
     public void setConnected(boolean connected) {
         this.connected = connected;
+    }
+
+    public Set<DeviceGroup> getDeviceGroups() {
+        return deviceGroups;
+    }
+
+    public void setDeviceGroups(Set<DeviceGroup> deviceGroups) {
+        this.deviceGroups = deviceGroups;
     }
 }

@@ -39,6 +39,7 @@ public class Light extends GenericDevice {
     private Integer saturation;
     private List<Integer> xy;
     private Integer color_temperature;
+    private Integer internal_id;
 
     public Light() {
         this.setType(DeviceType.LIGHT);
@@ -106,5 +107,13 @@ public class Light extends GenericDevice {
 
     public void setColor_temperature(Integer color_temperature) {
         this.color_temperature = color_temperature;
+    }
+
+    public Integer getInternal_id() {
+        return internal_id;
+    }
+
+    public void setInternal_id(Integer internal_id) {
+        this.internal_id = internal_id;
     }
 }

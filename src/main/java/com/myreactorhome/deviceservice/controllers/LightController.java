@@ -56,7 +56,7 @@ public class LightController {
             e.printStackTrace();
         }
 
-        eventClient.createEvent(hub.getGroupId(), light.getName());
+        eventClient.createEvent(hub.getGroupId(), repositoryLight.get().getName());
 
         return new ResponseEntity(HttpStatus.OK);
     }

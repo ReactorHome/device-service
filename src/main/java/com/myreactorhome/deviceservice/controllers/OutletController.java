@@ -59,7 +59,7 @@ public class OutletController {
             e.printStackTrace();
         }
 
-        eventClient.createEvent(hub.getGroupId(), outlet.getName());
+        eventClient.createEvent(hub.getGroupId(), repositoryOutlet.get().getName());
 
         repositoryOutlet.get().update(outlet);
         outletRepository.save(repositoryOutlet.get());

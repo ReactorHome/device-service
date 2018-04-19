@@ -10,4 +10,5 @@ public interface HubRepository extends MongoRepository<Hub, String> {
     Hub findByGroupId(Integer groupId);
     List<Hub> findByGroupIdIn(List<Integer> groupIds);
     Optional<Hub> findByHardwareId(String hardware_id);
+    Optional<Hub> findById(String id);
 }

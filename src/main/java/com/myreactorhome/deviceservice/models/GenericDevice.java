@@ -1,5 +1,7 @@
 package com.myreactorhome.deviceservice.models;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import org.springframework.data.annotation.Id;
@@ -19,6 +21,18 @@ import org.springframework.data.mongodb.core.index.Indexed;
  */
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "type",
+        visible = true)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Light.class, name = "0"),
+
+        @JsonSubTypes.Type(value = Outlet.class, name = "1"),
+        @JsonSubTypes.Type(value = Thermostat.class, name="2")
+}
+)
 public abstract class GenericDevice {
 
     @Id
