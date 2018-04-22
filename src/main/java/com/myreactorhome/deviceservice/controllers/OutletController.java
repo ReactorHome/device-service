@@ -67,7 +67,7 @@ public class OutletController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PatchMapping("/service/{id}/outlet/{outletId}")
+    @PutMapping("/service/{id}/outlet/{outletId}")
     public ResponseEntity<?> serviceUpdate(@PathVariable("id") Integer id, @PathVariable("outletId") String outletId, @RequestBody Outlet outlet){
         Hub hub = hubRepository.findByGroupId(id);
         if (!hub.isConnected()){

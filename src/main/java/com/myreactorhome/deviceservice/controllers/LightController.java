@@ -62,7 +62,7 @@ public class LightController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PatchMapping("/service/{id}/light/{lightId}")
+    @PutMapping("/service/{id}/light/{lightId}")
     public ResponseEntity<?> serviceUpdate (@PathVariable("id") Integer id, @PathVariable("lightId") String lightId, @RequestBody Light light){
         Hub hub = hubRepository.findByGroupId(id);
 

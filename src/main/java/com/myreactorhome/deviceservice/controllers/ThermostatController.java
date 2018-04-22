@@ -106,7 +106,7 @@ public class ThermostatController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PatchMapping("/service/{id}/thermostat/{thermostatId}")
+    @PutMapping("/service/{id}/thermostat/{thermostatId}")
     ResponseEntity<?> serviceUpdate(@PathVariable("id") Integer id, @PathVariable("thermostatId") String thermostatId, @RequestBody Thermostat thermostat){
         String nestToken = thermostatRepository.findOne(thermostatId).getApiKey();
         String nestDeviceId = thermostat.getDeviceId();
