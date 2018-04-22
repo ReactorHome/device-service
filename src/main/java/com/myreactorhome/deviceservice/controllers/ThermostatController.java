@@ -93,7 +93,7 @@ public class ThermostatController {
         return thermostats;
     }
 
-    @PutMapping("/api/{hubId}/thermostat/{thermostatId}")
+    @PatchMapping("/api/{hubId}/thermostat/{thermostatId}")
     @PreAuthorize("isGroupMember(#hubId)")
     ResponseEntity<?> updateThermostat(@PathVariable("hubId") String hubId, @PathVariable("thermostatId") String thermostatId, @RequestBody Thermostat thermostat){
         String nestToken = thermostatRepository.findOne(thermostatId).getApiKey();
@@ -102,6 +102,18 @@ public class ThermostatController {
         nestClient.updateThermostat(nestToken, nestDeviceId, thermostat);
 
         eventClient.createEvent(hubRepository.findOne(hubId).getGroupId(), thermostat.getName());
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PatchMapping("/service/{id}/thermostat/{thermostatId}")
+    ResponseEntity<?> serviceUpdate(@PathVariable("id") Integer id, @PathVariable("thermostatId") String thermostatId, @RequestBody Thermostat thermostat){
+        String nestToken = thermostatRepository.findOne(thermostatId).getApiKey();
+        String nestDeviceId = thermostat.getDeviceId();
+        thermostat.setDeviceId(null);
+        nestClient.updateThermostat(nestToken, nestDeviceId, thermostat);
+
+        eventClient.createEvent(hubRepository.findByGroupId(id).getGroupId(), thermostat.getName());
 
         return new ResponseEntity(HttpStatus.OK);
     }

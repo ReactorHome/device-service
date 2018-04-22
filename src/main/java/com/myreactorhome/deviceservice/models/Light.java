@@ -29,7 +29,7 @@ import java.util.List;
 
 @Document(collection = "lights")
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class Light extends GenericDevice {
+public class Light extends GenericDevice implements Updateable<Light> {
 
     private Boolean on;
     private Integer brightness;
@@ -115,5 +115,20 @@ public class Light extends GenericDevice {
 
     public void setInternal_id(Integer internal_id) {
         this.internal_id = internal_id;
+    }
+
+    @Override
+    public void update(Light other) {
+        if(!other.getOn().equals(this.on)){
+            this.on = !this.on;
+        }
+
+        if(!other.getBrightness().equals(this.brightness)){
+            this.brightness = other.getBrightness();
+        }
+
+        if(!other.getName().equals(this.getName())){
+            this.setName(other.getName());
+        }
     }
 }

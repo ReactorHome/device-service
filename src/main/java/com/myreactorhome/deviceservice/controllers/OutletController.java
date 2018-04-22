@@ -66,4 +66,33 @@ public class OutletController {
 
         return new ResponseEntity(HttpStatus.OK);
     }
+
+    @PatchMapping("/service/{id}/outlet/{outletId}")
+    public ResponseEntity<?> serviceUpdate(@PathVariable("id") Integer id, @PathVariable("outletId") String outletId, @RequestBody Outlet outlet){
+        Hub hub = hubRepository.findByGroupId(id);
+        if (!hub.isConnected()){
+            return new ResponseEntity(HttpStatus.FORBIDDEN);
+        }
+
+        Outlet repositoryOutlet = outletRepository.findOne(outletId);
+
+        if (!repositoryOutlet.getConnected()){
+            return new ResponseEntity(HttpStatus.FORBIDDEN);
+        }
+        HubMessage message = new HubMessage(HubMessageType.OUTLET, outlet);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        try {
+            messageService.sendMessage(hub.getHardwareId(), objectMapper.writeValueAsString(message));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        eventClient.createEvent(hub.getGroupId(), repositoryOutlet.getName());
+
+        repositoryOutlet.update(outlet);
+        outletRepository.save(repositoryOutlet);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }

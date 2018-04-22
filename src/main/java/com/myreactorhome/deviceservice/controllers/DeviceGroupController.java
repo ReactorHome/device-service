@@ -112,7 +112,7 @@ public class DeviceGroupController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/api/{id}/device-groups/{groupId}/state")
+    @DeleteMapping("/api/{id}/device-groups/{groupId}/devices")
     @PreAuthorize("isGroupMember(#id)")
     ResponseEntity<?> removeDevicesFromGroup(@PathVariable("id") String hubId, @PathVariable("groupId") String deviceGroupId, @RequestBody Set<GenericDevice> devices){
         Optional<DeviceGroup> deviceGroupOptional = deviceGroupRepository.findById(deviceGroupId);
@@ -124,7 +124,7 @@ public class DeviceGroupController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/api/{id}/device-groups/{groupId}/devices")
+    @PatchMapping("/api/{id}/device-groups/{groupId}/state")
     @PreAuthorize("isGroupMember(#id)")
     ResponseEntity<?> update(@PathVariable("id") String id, @PathVariable("groupId") String groupId, @RequestBody Map<String, Object> params){
 

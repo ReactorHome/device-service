@@ -28,7 +28,7 @@ public class GenericDeviceController {
     private ThermostatRepository thermostatRepository;
 
 
-    @GetMapping ("api/{id}/device")
+    @GetMapping ("service/{id}/device")
     public GenericDevice index(@PathVariable("id") String id) {
 
         if(lightRepository.exists(id)) {
