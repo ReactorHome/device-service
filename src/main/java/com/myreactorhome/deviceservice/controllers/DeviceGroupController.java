@@ -4,13 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myreactorhome.deviceservice.exceptions.ModelNotFound;
-import com.myreactorhome.deviceservice.models.DeviceCapabilities;
-import com.myreactorhome.deviceservice.models.DeviceGroup;
-import com.myreactorhome.deviceservice.models.GenericDevice;
-import com.myreactorhome.deviceservice.models.Hub;
+import com.myreactorhome.deviceservice.models.*;
 import com.myreactorhome.deviceservice.repositories.DeviceGroupRepository;
 import com.myreactorhome.deviceservice.repositories.HubRepository;
 import com.myreactorhome.deviceservice.services.MessageService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +16,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 @RestController
@@ -126,7 +128,7 @@ public class DeviceGroupController {
 
     @PatchMapping("/api/{id}/device-groups/{groupId}/state")
     @PreAuthorize("isGroupMember(#id)")
-    ResponseEntity<?> update(@PathVariable("id") String id, @PathVariable("groupId") String groupId, @RequestBody Map<String, Object> params){
+    ResponseEntity<?> update(@PathVariable("id") String id, @PathVariable("groupId") String groupId, @RequestBody Map<String, Object> params) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
 
         Hub hub = hubRepository.findOne(id);
         if (!hub.isConnected()){
@@ -137,16 +139,38 @@ public class DeviceGroupController {
         DeviceGroup deviceGroup = deviceGroupOptional.orElseThrow(() -> new ModelNotFound("device group"));
 
         if(deviceGroup.getDevices() != null && !deviceGroup.getDevices().isEmpty()){
-            for(GenericDevice device: deviceGroup.getDevices()){
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-                params.put("hardware_id", device.getHardwareId());
-                try {
-                    messageService.sendMessage(hub.getHardwareId(), objectMapper.writeValueAsString(params));
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+            for(String key: params.keySet()){
+                for(GenericDevice device: deviceGroup.getDevices()){
+                    HubMessageType type;
+                    Light light;
+                    Outlet outlet;
+                    HubMessage message = new HubMessage();
+                    if(device instanceof Light){
+                        type = HubMessageType.LIGHT;
+                        light = (Light) device;
+                        PropertyDescriptor propertyDescriptor = new PropertyDescriptor(key, Light.class);
+                        propertyDescriptor.getWriteMethod().invoke(light, params.get(key));
+                        message.setDevice(light);
+                        message.setType(type);
+                    }else{
+                        type = HubMessageType.OUTLET;
+                        outlet = (Outlet)device;
+                        PropertyDescriptor propertyDescriptor = new PropertyDescriptor(key, Outlet.class);
+                        propertyDescriptor.getWriteMethod().invoke(outlet, params.get(key));
+                        message.setDevice(outlet);
+                        message.setType(type);
+                    }
+
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+                    try {
+                        messageService.sendMessage(hub.getHardwareId(), objectMapper.writeValueAsString(message));
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
