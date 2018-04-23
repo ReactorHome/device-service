@@ -123,6 +123,6 @@ public abstract class GenericDevice {
 
     @Override
     public int hashCode() {
-        return hardwareId.hashCode();
+        return this.getHardwareId().hashCode();
     }
 }

@@ -231,4 +231,14 @@ public class Thermostat extends GenericDevice {
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
+
+    @Override
+    public String getHardwareId() {
+        return this.deviceId;
+    }
+
+    @Override
+    public void setHardwareId(String hardware_id) {
+        this.setDeviceId(hardware_id);
+    }
 }

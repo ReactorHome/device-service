@@ -2,9 +2,11 @@ package com.myreactorhome.deviceservice.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.myreactorhome.deviceservice.feign_clients.EventClient;
 import com.myreactorhome.deviceservice.feign_clients.NestClient;
 import com.myreactorhome.deviceservice.feign_clients.NestRegistrationClient;
+import com.myreactorhome.deviceservice.models.DeviceType;
 import com.myreactorhome.deviceservice.models.Hub;
 import com.myreactorhome.deviceservice.models.Thermostat;
 import com.myreactorhome.deviceservice.repositories.HubRepository;
@@ -73,10 +75,11 @@ public class ThermostatController {
         final JsonNode json;
         try {
             json = mapper.readTree(jsonS);
-            for (final JsonNode thermostat : json) {
-                 Thermostat thermostat1 = mapper.treeToValue(thermostat, Thermostat.class);
-                 thermostat1.setApiKey(nestAuthToken);
-                 thermostats.add(thermostat1);
+            for (JsonNode thermostat : json) {
+                ((ObjectNode)thermostat).put("type", DeviceType.THERMOSTAT.ordinal());
+                Thermostat thermostat1 = mapper.treeToValue(thermostat, Thermostat.class);
+                thermostat1.setApiKey(nestAuthToken);
+                thermostats.add(thermostat1);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -89,7 +92,7 @@ public class ThermostatController {
         thermostatRepository.save(thermostats);
         hub.getDevices().addAll(thermostats);
         hubRepository.save(hub);
-        System.out.println(hub.getDevices());
+        //System.out.println(hub.getDevices());
         return thermostats;
     }
 
